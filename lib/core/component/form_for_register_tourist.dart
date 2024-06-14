@@ -7,6 +7,7 @@ import 'package:guru/core/utils/custom_text_button.dart';
 import 'package:guru/core/utils/styles.dart';
 import 'package:guru/logic/tourist/add_tourist_cubit.dart';
 import 'package:guru/logic/tourist/add_tourist_state.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:lottie/lottie.dart';
 
 class FormForRegisterTourist extends StatelessWidget {
@@ -112,6 +113,46 @@ class FormForRegisterTourist extends StatelessWidget {
                           },
                         ),
                         const SizedBox(height: 20),
+                        CustomTextFormField(
+                          controller: context.read<AddTouristCubit>().touristEmailController,
+                          hintText: "Enter Your Email",
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your email';
+                            }
+                            // Regex pattern to validate email addresses
+                            if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
+                              return 'Please enter a valid email address';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        IntlPhoneField(
+                          controller: context.read<AddTouristCubit>().whatsAppNumberController,
+                          decoration:  InputDecoration(
+                            hintText: "WhatsApp Number",
+                            filled: true,
+                            hintStyle: Styles.font14BlueSemiBold(context),
+                            fillColor:  ColorsApp.moreLightGrey,
+                            border: UnderlineInputBorder(
+                              borderSide: BorderSide(),
+                            ),
+                          ),
+                          initialCountryCode: 'EG', // Default to Egypt
+                          onChanged: (phone) {
+                            print(phone.completeNumber); // Use this to get the full phone number
+                          },
+                          onCountryChanged: (country) {
+                            print('Country changed to: ' + country.name);
+                          },
+                          validator: (phone) {
+                            if (phone == null || phone.completeNumber.isEmpty) {
+                              return 'Please enter your WhatsApp number';
+                            }
+                            return null;
+                          },
+                        ),
                         CustomTextFormField(
                           controller: context
                               .read<AddTouristCubit>()

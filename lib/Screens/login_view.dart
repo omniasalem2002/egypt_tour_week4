@@ -100,36 +100,6 @@ class _LoginViewState extends State<LoginView> {
                             style: TextStyle(color: Colors.white),
                           ),
                         ),
-                        // ElevatedButton(
-                        //   style: ElevatedButton.styleFrom(
-                        //       backgroundColor:
-                        //           const Color.fromARGB(255, 1, 61, 58)),
-                        //   onPressed: () {
-                        //     setState(() {
-                        //       _selectedUserType = " Tourist  ";
-                        //     });
-                        //   },
-                        //   child: const Text(
-                        //     " Tourist  ",
-                        //     style: TextStyle(color: Colors.white),
-                        //   ),
-                        // ),
-
-                        // ElevatedButton.icon(
-                        //   onPressed: () {
-                        //     setState(() {
-                        //       _selectedUserType = 'Tourist';
-                        //     });
-                        //   },
-                        //   icon: const Icon(
-                        //     Icons.person,
-                        //     color: ColorsApp.primaryColor,
-                        //   ),
-                        //   label: const Text(
-                        //     'Tourist',
-                        //     style: TextStyle(color: ColorsApp.primaryColor),
-                        //   ),
-                        // ),
                       ],
                     ),
                     if (_selectedUserType == 'Tour Guide' ||
@@ -186,13 +156,8 @@ class _LoginViewState extends State<LoginView> {
                               const SizedBox(height: 20),
                               Container(
                                 width: double.infinity,
-                                child: Align(
+                                child: const Align(
                                   alignment: Alignment.centerLeft,
-                                  // child: Text(
-                                  //   "Register As Tour Guide",
-                                  //   style: Styles.font18LightGreyBold(context),
-                                  //   textAlign: TextAlign.left,
-                                  // ),
                                 ),
                               ),
                               const SizedBox(height: 20),
@@ -221,12 +186,12 @@ class _LoginViewState extends State<LoginView> {
                                   if (value == null || value.isEmpty) {
                                     return 'Please enter your phone number';
                                   }
-                                  if (value.length != 10) {
-                                    return 'Phone number must be exactly 10 digits';
+
+                                  // Check if the phone number starts with '01' and has exactly 11 digits in total
+                                  if (!RegExp(r'^01[0-9]{9}$').hasMatch(value)) {
+                                    return 'Please enter a valid Egyptian phone number starting with 01';
                                   }
-                                  if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
-                                    return 'Phone number must contain only digits';
-                                  }
+
                                   return null;
                                 },
                               ),
@@ -256,23 +221,6 @@ class _LoginViewState extends State<LoginView> {
                                   if (value == null || value.isEmpty) {
                                     return 'Please select City';
                                   }
-                                },
-                              ),
-                              const SizedBox(height: 20),
-                              CustomTextFormField(
-                                controller: context.read<TourGuideCubit>().tourGuidePhoneNumberController,
-                                hintText: "Enter Your Phone Number",
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter your phone number';
-                                  }
-
-                                  // Check if the phone number starts with '01' and has exactly 11 digits in total
-                                  if (!RegExp(r'^01[0-9]{9}$').hasMatch(value)) {
-                                    return 'Please enter a valid Egyptian phone number starting with 01';
-                                  }
-
-                                  return null;
                                 },
                               ),
                               const SizedBox(height: 20),

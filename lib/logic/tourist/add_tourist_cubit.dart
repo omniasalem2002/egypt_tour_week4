@@ -15,15 +15,26 @@ class AddTouristCubit extends Cubit<TouristState> {
 
   TextEditingController touristNameController = TextEditingController();
   TextEditingController touristPhoneNumberController = TextEditingController();
+  TextEditingController whatsAppNumberController = TextEditingController();
+  TextEditingController touristEmailController = TextEditingController();
 
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   void addTourist() async {
     emit(TouristLoading());
+    try{
+      // Check if the tour guide already exists
+      bool exists = await _fireStoreServices.touristExists(touristPhoneNumberController.text);
+      if (exists) {
+        emit(TouristFailure(error: 'Tourist with this phone number already exists'));
+        return;
+      }
 
-    try {
+
       await _fireStoreServices.addTourist(TourisModel(
+        email: touristEmailController.text,
+        whatsAppNumber: whatsAppNumberController.text,
         name: touristNameController.text,
         phoneNumber: touristPhoneNumberController.text,
       ));

@@ -21,8 +21,8 @@ showListCityDialog(BuildContext ctxt, Size size) {
             itemBuilder: (context, index) {
               return InkWell(
                 onTap: () {
-                 /* BlocProvider.of<TourGuideCubit>(ctxt).selectedCityController.text = _cities[index];
-                  Navigator.pop(context);*/
+                  BlocProvider.of<TourGuideCubit>(ctxt).selectedCityController.text = _cities[index];
+                  Navigator.pop(context);
                 },
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
