@@ -6,6 +6,7 @@ import 'package:guru/data/repos/fire_store_services_for_tourist.dart';
 import 'package:guru/logic/tour_guide/add_tour_guide/add_tour_guide_cubit.dart';
 import 'package:guru/logic/tourist/add_tourist_cubit.dart';
 import 'package:guru/splash.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,11 +19,16 @@ void main() async {
     }
   }
 
-  runApp(const MyApp());
+  // Initialize SharedPreferences
+  SharedPreferences _prefs = await SharedPreferences.getInstance();
+
+  runApp(MyApp(preferences: _prefs));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final SharedPreferences preferences;
+
+  const MyApp({Key? key, required this.preferences}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -35,10 +41,10 @@ class MyApp extends StatelessWidget {
           create: (context) => TourGuideCubit(fireStoreService),
         ),
         BlocProvider(
-          create: (context) => AddTouristCubit(fireStoreServicesForTourist),
+          create: (context) => AddTouristCubit(fireStoreServicesForTourist, preferences),
         ),
       ],
-      child: const MaterialApp(
+      child: MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Splash(),
       ),

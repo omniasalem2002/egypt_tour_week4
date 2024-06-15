@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:guru/Screens/contact_tour_with_phone.dart';
+import 'package:guru/Screens/profile.dart';
 import 'package:guru/core/component/custom_text_form_field.dart';
 import 'package:guru/core/utils/colors_app.dart';
 import 'package:guru/core/utils/custom_text_button.dart';
@@ -9,8 +10,9 @@ import 'package:guru/logic/tourist/add_tourist_cubit.dart';
 import 'package:guru/logic/tourist/add_tourist_state.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:lottie/lottie.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class FormForRegisterTourist extends StatelessWidget {
+class FormForRegisterTourist extends StatefulWidget {
   final String tourGuideName;
   final String tourGuidePhoneNumber;
 
@@ -18,6 +20,15 @@ class FormForRegisterTourist extends StatelessWidget {
       {super.key,
       required this.tourGuideName,
       required this.tourGuidePhoneNumber});
+
+  @override
+  State<FormForRegisterTourist> createState() => _FormForRegisterTouristState();
+}
+
+class _FormForRegisterTouristState extends State<FormForRegisterTourist> {
+  void saveData() async {
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,18 +53,24 @@ class FormForRegisterTourist extends StatelessWidget {
               );
             } else if (state is TouristSuccess) {
               // Hide loading indicator and show success message
-              Navigator.pop(context); // To dismiss the loading dialog
-              Navigator.push(
+              Navigator.pop(context);
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => Profile( tourGuideName: widget.tourGuideName,
+                  tourGuidePhoneNumber: widget.tourGuidePhoneNumber,)),
+              );
+// To dismiss the loading dialog
+             /* Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) {
                     return ContactTourWithPhone(
-                      tourGuideName: tourGuideName,
-                      tourGuidePhoneNumber: tourGuidePhoneNumber,
+                      tourGuideName: widget.tourGuideName,
+                      tourGuidePhoneNumber: widget.tourGuidePhoneNumber,
                     );
                   },
                 ),
-              );
+              );*/
             } else if (state is TouristFailure) {
               // Hide loading indicator and show error message
               Navigator.pop(context); // To dismiss the loading dialog
@@ -81,7 +98,7 @@ class FormForRegisterTourist extends StatelessWidget {
                   ),
                   child: Center(
                     child: Text(
-                      tourGuideName,
+                      widget.tourGuideName,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 17,
@@ -175,16 +192,29 @@ class FormForRegisterTourist extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.all(3),
                           child: AppTextButton(
-                            buttonText: 'Send Information to Guide',
+                            buttonText: 'See your data',
                             textStyle: Styles.font14LightGreyRegular(context),
                             backgroundColor: ColorsApp.darkPrimary,
-                            onPressed: () {
+                            onPressed: () async {
+                              SharedPreferences prefs = await SharedPreferences.getInstance();
+                              await prefs.setString('name',context
+                                  .read<AddTouristCubit>()
+                                  .touristNameController.text);
+                              await prefs.setString('email',context
+                                  .read<AddTouristCubit>()
+                                  .touristEmailController.text);
+                              await prefs.setString('phoneNumber',context
+                                  .read<AddTouristCubit>()
+                                  .touristPhoneNumberController.text);
+
+                              // Navigate to Profile page after saving data
                               if (context
                                   .read<AddTouristCubit>()
                                   .formKey
                                   .currentState!
                                   .validate()) {
                                 context.read<AddTouristCubit>().addTourist();
+
                               }
                             },
                           ),

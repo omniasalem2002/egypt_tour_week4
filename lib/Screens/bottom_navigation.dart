@@ -18,7 +18,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
     const HomeScreen(),
     const About(),
     const Contact(),
-    const Profile(),
+    // Profile(),
   ];
   @override
   Widget build(BuildContext context) {
