@@ -69,7 +69,7 @@ class _ProfileState extends State<Profile> {
               style: TextStyle(fontSize: 20),
             ),
             const SizedBox(height: 20),
-            Padding(
+           /* Padding(
               padding: const EdgeInsets.all(3),
               child: AppTextButton(
                 buttonText: 'Send Information to Guide',
@@ -89,7 +89,7 @@ class _ProfileState extends State<Profile> {
                   );
                 },
               ),
-            ),
+            ),*/
           ],
         ),
       ),

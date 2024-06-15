@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:guru/Screens/contact_tour_with_phone.dart';
-import 'package:guru/Screens/profile.dart';
 import 'package:guru/core/component/custom_text_form_field.dart';
 import 'package:guru/core/utils/colors_app.dart';
 import 'package:guru/core/utils/custom_text_button.dart';
@@ -16,23 +15,44 @@ class FormForRegisterTourist extends StatefulWidget {
   final String tourGuideName;
   final String tourGuidePhoneNumber;
 
-  const FormForRegisterTourist(
-      {super.key,
-      required this.tourGuideName,
-      required this.tourGuidePhoneNumber});
+  const FormForRegisterTourist({
+    Key? key,
+    required this.tourGuideName,
+    required this.tourGuidePhoneNumber,
+  }) : super(key: key);
 
   @override
   State<FormForRegisterTourist> createState() => _FormForRegisterTouristState();
 }
 
 class _FormForRegisterTouristState extends State<FormForRegisterTourist> {
-  void saveData() async {
+  bool formSubmitted = false; // Flag to track if form has been submitted
 
+  @override
+  void initState() {
+    super.initState();
+    checkFormSubmissionStatus();
+  }
+
+  Future<void> checkFormSubmissionStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool submitted = prefs.getBool('formSubmitted') ?? false;
+    setState(() {
+      formSubmitted = submitted;
+    });
+  }
+
+  void saveFormSubmissionStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('formSubmitted', true);
   }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    if (formSubmitted) {
+      return Container(); // Return an empty container if form has been submitted
+    }
 
     return SafeArea(
       child: Scaffold(
@@ -48,29 +68,23 @@ class _FormForRegisterTouristState extends State<FormForRegisterTourist> {
               // Show loading indicator
               showDialog(
                 context: context,
-                builder: (context) =>
-                    const Center(child: CircularProgressIndicator()),
+                builder: (context) => const Center(
+                  child: CircularProgressIndicator(),
+                ),
               );
             } else if (state is TouristSuccess) {
               // Hide loading indicator and show success message
-              Navigator.pop(context);
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => Profile( tourGuideName: widget.tourGuideName,
-                  tourGuidePhoneNumber: widget.tourGuidePhoneNumber,)),
-              );
-// To dismiss the loading dialog
-             /* Navigator.push(
+              Navigator.pop(context); // To dismiss the loading dialog
+              saveFormSubmissionStatus(); // Save form submission status
+              Navigator.pushReplacement( // PushReplacement to prevent going back to this page
                 context,
                 MaterialPageRoute(
-                  builder: (context) {
-                    return ContactTourWithPhone(
-                      tourGuideName: widget.tourGuideName,
-                      tourGuidePhoneNumber: widget.tourGuidePhoneNumber,
-                    );
-                  },
+                  builder: (context) => ContactTourWithPhone(
+                    tourGuideName: widget.tourGuideName,
+                    tourGuidePhoneNumber: widget.tourGuidePhoneNumber,
+                  ),
                 ),
-              );*/
+              );
             } else if (state is TouristFailure) {
               // Hide loading indicator and show error message
               Navigator.pop(context); // To dismiss the loading dialog
@@ -82,13 +96,9 @@ class _FormForRegisterTouristState extends State<FormForRegisterTourist> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 Lottie.asset("images/reg.json", height: 250),
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 Container(
                   width: 200,
                   height: 50,
@@ -115,9 +125,8 @@ class _FormForRegisterTouristState extends State<FormForRegisterTourist> {
                       children: [
                         const SizedBox(height: 20),
                         CustomTextFormField(
-                          controller: context
-                              .read<AddTouristCubit>()
-                              .touristNameController,
+                          controller:
+                          context.read<AddTouristCubit>().touristNameController,
                           hintText: "Enter Your Name",
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -131,7 +140,8 @@ class _FormForRegisterTouristState extends State<FormForRegisterTourist> {
                         ),
                         const SizedBox(height: 20),
                         CustomTextFormField(
-                          controller: context.read<AddTouristCubit>().touristEmailController,
+                          controller:
+                          context.read<AddTouristCubit>().touristEmailController,
                           hintText: "Enter Your Email",
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -146,12 +156,14 @@ class _FormForRegisterTouristState extends State<FormForRegisterTourist> {
                         ),
                         const SizedBox(height: 20),
                         IntlPhoneField(
-                          controller: context.read<AddTouristCubit>().whatsAppNumberController,
-                          decoration:  InputDecoration(
+                          controller: context
+                              .read<AddTouristCubit>()
+                              .whatsAppNumberController,
+                          decoration: InputDecoration(
                             hintText: "WhatsApp Number",
                             filled: true,
                             hintStyle: Styles.font14BlueSemiBold(context),
-                            fillColor:  ColorsApp.moreLightGrey,
+                            fillColor: ColorsApp.moreLightGrey,
                             border: UnderlineInputBorder(
                               borderSide: BorderSide(),
                             ),
@@ -192,20 +204,31 @@ class _FormForRegisterTouristState extends State<FormForRegisterTourist> {
                         Padding(
                           padding: const EdgeInsets.all(3),
                           child: AppTextButton(
-                            buttonText: 'See your data',
+                            buttonText: 'Send Information to Guide',
                             textStyle: Styles.font14LightGreyRegular(context),
                             backgroundColor: ColorsApp.darkPrimary,
                             onPressed: () async {
-                              SharedPreferences prefs = await SharedPreferences.getInstance();
-                              await prefs.setString('name',context
-                                  .read<AddTouristCubit>()
-                                  .touristNameController.text);
-                              await prefs.setString('email',context
-                                  .read<AddTouristCubit>()
-                                  .touristEmailController.text);
-                              await prefs.setString('phoneNumber',context
-                                  .read<AddTouristCubit>()
-                                  .touristPhoneNumberController.text);
+                              // Save tourist data to SharedPreferences
+                              SharedPreferences prefs =
+                              await SharedPreferences.getInstance();
+                              await prefs.setString(
+                                  'name',
+                                  context
+                                      .read<AddTouristCubit>()
+                                      .touristNameController
+                                      .text);
+                              await prefs.setString(
+                                  'email',
+                                  context
+                                      .read<AddTouristCubit>()
+                                      .touristEmailController
+                                      .text);
+                              await prefs.setString(
+                                  'phoneNumber',
+                                  context
+                                      .read<AddTouristCubit>()
+                                      .touristPhoneNumberController
+                                      .text);
 
                               // Navigate to Profile page after saving data
                               if (context
@@ -214,7 +237,6 @@ class _FormForRegisterTouristState extends State<FormForRegisterTourist> {
                                   .currentState!
                                   .validate()) {
                                 context.read<AddTouristCubit>().addTourist();
-
                               }
                             },
                           ),

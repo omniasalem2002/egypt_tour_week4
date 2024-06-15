@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:guru/Screens/contact_tour_with_phone.dart';
 import 'package:guru/core/component/form_for_register_tourist.dart';
 import 'package:guru/data/models/tour_guide/TourGuideModel.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TourGuideDetail extends StatefulWidget {
   final TourGuideRequestBody tourGuide;
@@ -83,18 +85,34 @@ class _TourGuideDetailState extends State<TourGuideDetail> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) {
-                      return FormForRegisterTourist(
+              onPressed: () async {
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                bool formSubmitted = prefs.getBool('formSubmitted') ?? false;
+
+                if (formSubmitted) {
+                  // Navigate to ContactTourWithPhone if form has been submitted
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ContactTourWithPhone(
                         tourGuideName: widget.tourGuide.name,
                         tourGuidePhoneNumber: widget.tourGuide.phoneNumber,
-                      );
-                    },
-                  ),
-                );
+                        // Pass relevant data if needed
+                      ),
+                    ),
+                  );
+                } else {
+                  // Navigate to FormForRegisterTourist if form has not been submitted
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => FormForRegisterTourist(
+                        tourGuideName: widget.tourGuide.name,
+                        tourGuidePhoneNumber: widget.tourGuide.phoneNumber,
+                      ),
+                    ),
+                  );
+                }
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromARGB(255, 1, 61, 58),
@@ -103,8 +121,7 @@ class _TourGuideDetailState extends State<TourGuideDetail> {
                 "Book Now",
                 style: TextStyle(color: Colors.white),
               ),
-            ),
-          ],
+            ),          ],
         ),
       ),
     );
