@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:guru/logic/tourist/add_tourist_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:guru/data/models/tourist/TouristModel.dart';
 import 'package:guru/data/repos/fire_store_services_for_tourist.dart';
-import 'package:guru/logic/tourist/add_tourist_state.dart';
 
 class AddTouristCubit extends Cubit<TouristState> {
   final FireStoreServicesForTourist _fireStoreServices;
@@ -21,14 +21,12 @@ class AddTouristCubit extends Cubit<TouristState> {
   Future<void> addTourist() async {
     emit(TouristLoading());
     try {
-      // Check if the tourist already exists
       bool exists = await _fireStoreServices.touristExists(touristPhoneNumberController.text);
       if (exists) {
         emit(TouristFailure(error: 'Tourist with this phone number already exists'));
         return;
       }
 
-      // Add tourist to Firestore
       await _fireStoreServices.addTourist(TourisModel(
         email: touristEmailController.text,
         whatsAppNumber: whatsAppNumberController.text,
@@ -36,7 +34,6 @@ class AddTouristCubit extends Cubit<TouristState> {
         phoneNumber: touristPhoneNumberController.text,
       ));
 
-      // Save tourist data to SharedPreferences
       await _saveToSharedPreferences(
         name: touristNameController.text,
         phoneNumber: touristPhoneNumberController.text,
@@ -62,12 +59,19 @@ class AddTouristCubit extends Cubit<TouristState> {
     await _prefs.setString('whatsAppNumber', whatsAppNumber);
   }
 
-  Future<Map<String, dynamic>> loadTouristFromSharedPreferences() async {
-    return {
-      'name': _prefs.getString('name') ?? '',
-      'phoneNumber': _prefs.getString('phoneNumber') ?? '',
-      'email': _prefs.getString('email') ?? '',
-      'whatsAppNumber': _prefs.getString('whatsAppNumber') ?? '',
+  Future<void> loadTouristFromSharedPreferences() async {
+    final name = _prefs.getString('name') ?? '';
+    final phoneNumber = _prefs.getString('phoneNumber') ?? '';
+    final email = _prefs.getString('email') ?? '';
+    final whatsAppNumber = _prefs.getString('whatsAppNumber') ?? '';
+
+    final touristData = {
+      'name': name,
+      'phoneNumber': phoneNumber,
+      'email': email,
+      'whatsAppNumber': whatsAppNumber,
     };
+
+    emit(TouristLoaded(touristData: touristData));
   }
 }

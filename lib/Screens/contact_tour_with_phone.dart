@@ -23,54 +23,56 @@ class ContactTourWithPhone extends StatelessWidget {
         foregroundColor: Colors.white,
       ),
       body: Center(
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Lottie.asset("images/phone.json"),
-              const Text(
-                "You can book your guide for 35 US Dollars",
-                style: TextStyle(
-                  fontSize: 18,
+        child: SingleChildScrollView(
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Lottie.asset("images/phone.json"),
+                const Text(
+                  "You can book your guide for 35 US Dollars",
+                  style: TextStyle(
+                    fontSize: 18,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 30),
-              Text(
-                "$tourGuideName",
-                style:
-                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      tourGuidePhoneNumber,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        color: Color.fromARGB(255, 1, 61, 58),
-                      ),
-                    ),
-                    const SizedBox(width: 20),
-                    Card(
-                      elevation: 20,
-                      child: IconButton(
-                        icon: const Icon(
-                          Icons.phone,
+                const SizedBox(height: 30),
+                Text(
+                  "$tourGuideName",
+                  style:
+                      const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        tourGuidePhoneNumber,
+                        style: const TextStyle(
+                          fontSize: 20,
                           color: Color.fromARGB(255, 1, 61, 58),
-                          size: 40,
                         ),
-                        onPressed: () {
-                          _launchPhoneCall(tourGuidePhoneNumber);
-                        },
                       ),
-                    ),
-                  ],
-                ),
-              )
-            ],
+                      const SizedBox(width: 20),
+                      Card(
+                        elevation: 20,
+                        child: IconButton(
+                          icon: const Icon(
+                            Icons.phone,
+                            color: Color.fromARGB(255, 1, 61, 58),
+                            size: 40,
+                          ),
+                          onPressed: () {
+                            _launchPhoneCall(tourGuidePhoneNumber);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),
